@@ -1,0 +1,27 @@
+from scipy.spatial.transform import Rotation as R
+import numpy as np
+
+# Normal vectors
+wg1_normal = np.array([0.99253846, -0.12370374, 0.0042997])
+wg2_normal = np.array([0.99701622, -0.08062956, 0.02470565])
+
+# Normalize
+wg1_normal /= np.linalg.norm(wg1_normal)
+wg2_normal /= np.linalg.norm(wg2_normal)
+
+# Use align_vectors to compute optimal rotation
+rotation, rmsd = R.align_vectors([wg1_normal], [wg2_normal])
+
+# Apply rotation to wg2
+wg2_normal_rotated = rotation.apply(wg2_normal)
+
+# Print results
+print("WG1 normal:", wg1_normal)
+print("WG2 rotated normal:", wg2_normal_rotated)
+print("Aligned?", np.allclose(wg1_normal, wg2_normal_rotated, atol=1e-6))
+
+# Euler angles for manual adjustment
+euler_angles_deg = rotation.as_euler('xyz', degrees=True)
+print("Euler angles (degrees):", euler_angles_deg)
+
+print(np.cross(wg1_normal, wg2_normal_rotated))
